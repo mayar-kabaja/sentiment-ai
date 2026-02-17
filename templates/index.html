@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sentiment Analyzer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #667eea; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        .emoji-display {
+            text-align: center;
+            font-size: 8rem;
+            margin: 30px 0;
+            min-height: 150px;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover { opacity: 0.9; }
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+        .result.show { display: block; }
+        .result-positive { background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); }
+        .result-negative { background: linear-gradient(135deg, #ffb3ba 0%, #ffdfba 100%); }
+        .result-neutral { background: linear-gradient(135deg, #bae1ff 0%, #e3f2fd 100%); }
+        .result h2 { font-size: 1.8rem; margin-bottom: 10px; }
+        .result p { font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Sentiment Analyzer</h1>
+        <p class="subtitle">AI-Powered Emotion Detection</p>
+        
+        <div class="emoji-display" id="emoji">👋</div>
+        
+        <form id="sentimentForm">
+            <textarea id="text" placeholder="Type something like: 'I love this!', 'This is terrible', or 'It's okay'..." required></textarea>
+            <button type="submit">✨ Analyze Sentiment</button>
+        </form>
+        
+        <div class="result" id="result">
+            <h2 id="resultText"></h2>
+            <p id="confidence"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sentimentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('text').value;
+            
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({text: text})
+            });
+            
+            const data = await response.json();
+            
+            document.getElementById('emoji').textContent = data.emoji;
+            document.getElementById('resultText').textContent = `${data.emoji} ${data.sentiment}`;
+            document.getElementById('confidence').textContent = `Confidence: ${data.confidence}%`;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result show result-' + data.sentiment.toLowerCase();
+        };
+    </script>
+</body>
+</html>
